@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Backups e arquivos compactados
+*.rar
+*.zip
+*.7z
+
+# Arquivos temporários do Office
+~$*
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
