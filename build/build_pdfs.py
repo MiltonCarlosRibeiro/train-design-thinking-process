@@ -1,11 +1,4 @@
-"""Gera os PDFs do treinamento: apostila, prova, gabarito e roteiro do instrutor.
-
-A apostila tem caixas de vídeo interativas: um botão "Mostrar / ocultar vídeo"
-alterna a visibilidade do quadro do vídeo (JavaScript de formulário PDF, que
-funciona no Adobe Acrobat Reader e no Foxit). O quadro abre o link definido em
-build/videos.json.
-"""
-import json
+"""Gera os PDFs do treinamento: apostila, prova, gabarito e roteiro do instrutor."""
 from pathlib import Path
 
 from reportlab.lib.pagesizes import A4
@@ -225,58 +218,6 @@ class Matrix(Flowable):
         c.drawCentredString(x0 + (self.w - x0) / 2, -8, "ESFORÇO")
 
 
-VIDEO_SLOTS = {}  # key -> dict(page, video_rect, toggle_rect, color)
-
-
-class VideoBox(Flowable):
-    """Espaço de vídeo. O quadro interativo e o botão são adicionados depois (pypdf)."""
-    BW, BH = 400, 225
-
-    def __init__(self, key, n, color):
-        super().__init__()
-        self.key, self.n, self.color = key, n, color
-
-    def wrap(self, aw, ah):
-        self.w = aw
-        return aw, self.BH + 40
-
-    def draw(self):
-        c = self.canv
-        c.setFillColor(self.color)
-        c.circle(7, self.BH + 25, 7, stroke=0, fill=1)
-        c.setFillColor(white)
-        p = c.beginPath()
-        p.moveTo(4.8, self.BH + 21.5)
-        p.lineTo(4.8, self.BH + 28.5)
-        p.lineTo(10.6, self.BH + 25)
-        p.close()
-        c.drawPath(p, stroke=0, fill=1)
-        c.setFillColor(TXT)
-        c.setFont("UB-B", 11)
-        c.drawString(20, self.BH + 21, "Vídeo do módulo")
-        c.setFont("UB", 9)
-        c.setFillColor(SOFT)
-        c.drawString(20, self.BH + 9, VIDEOS[self.key])
-        # espaço reservado (visível quando o vídeo está oculto)
-        bx = (self.w - self.BW) / 2
-        c.setStrokeColor(RULE)
-        c.setDash(4, 3)
-        c.setFillColor(H("#FAFBF9"))
-        c.roundRect(bx, 0, self.BW, self.BH, 8, stroke=1, fill=1)
-        c.setDash()
-        c.setFillColor(SOFT)
-        c.setFont("UB", 9.5)
-        c.drawCentredString(self.w / 2, self.BH / 2 + 4, "Vídeo oculto.")
-        c.drawCentredString(self.w / 2, self.BH / 2 - 10, "Use o botão \u201cMostrar / ocultar vídeo\u201d para exibi-lo.")
-        ax, ay = c.absolutePosition(0, 0)
-        VIDEO_SLOTS[self.key] = {
-            "page": c.getPageNumber() - 1,
-            "video": (ax + bx, ay, ax + bx + self.BW, ay + self.BH),
-            "toggle": (ax + self.w - 150, ay + self.BH + 12, ax + self.w, ay + self.BH + 34),
-            "color": self.color.hexval()[2:],
-        }
-
-
 class Lines(Flowable):
     def __init__(self, n, gap=20):
         super().__init__()
@@ -432,7 +373,6 @@ def build_handout(out):
     s.append(P("Material de apoio aos três encontros do treinamento", "sub"))
     s.append(P("Esta apostila acompanha os slides e as dinâmicas. Use-a para revisar os conceitos, fazer os exercícios e registrar as ideias da sua equipe para o Desafio Final."))
     s += bullets([
-        "<b>Vídeos:</b> cada módulo tem um espaço de vídeo. No <b>Adobe Acrobat Reader</b> (gratuito), use o botão <b>Mostrar / ocultar vídeo</b> para exibir ou esconder o quadro, e clique no quadro para abrir o vídeo.",
         "<b>Exercícios:</b> ao fim de cada módulo há perguntas práticas com espaço para respostas. Aplique-as a um problema real da sua empresa.",
         "<b>Desafio Final:</b> no Encontro 3, sua equipe aplica todo o processo. O canvas está no final desta apostila.",
     ], LIME)
@@ -478,8 +418,6 @@ def build_handout(out):
                 s += [Spacer(1, 6), EmpathyMap(), Spacer(1, 12)]
             elif kind == "matrix":
                 s += [Spacer(1, 6), Matrix(), Spacer(1, 18)]
-            elif kind == "video":
-                s += [CondPageBreak(VideoBox.BH + 60), Spacer(1, 8), VideoBox(blk[1], n, col), Spacer(1, 12)]
             elif kind == "exercise":
                 s += [CondPageBreak(220)] + exercise(blk[1], blk[2], n)
 
@@ -583,7 +521,7 @@ def build_guide(out):
     s.append(P("Antes do treinamento", "h2"))
     s += bullets([
         "Converse com o contratante e colete 2 ou 3 problemas reais da empresa para usar nas dinâmicas e no Desafio Final.",
-        "Grave e insira os vídeos nos slides (botões \u201cAssistir vídeo\u201d abrem slides ocultos) e publique os links em build/videos.json para a apostila.",
+        "Os vídeos ficam na pasta videos e são vinculados aos slides (botões “Assistir vídeo” abrem slides ocultos). Em cada computador novo, rode Configurar_Videos.bat antes de apresentar.",
         "Imprima a apostila (opcional), a prova (1 por pessoa) e o canvas do desafio em A3 (1 por equipe).",
         "Teste o projetor, o som e o modo de apresentação: os slides de vídeo ficam ocultos e só aparecem pelo botão.",
         "As animações dos slides rodam sozinhas. Só dois momentos pedem um clique: na correção da prova (revela a alternativa correta) e na abertura do estudo de caso (mostra a pergunta à turma).",
@@ -600,6 +538,17 @@ def build_guide(out):
     for i, enc in enumerate(SCHEDULE):
         s += [PageBreak(), Badge(i + 1, "Encontro · 4 horas", [LIME, TEAL, BLUE][i]), P(enc["title"], "h1"), P(enc["goal"], "sub")]
         s += table(["Início", "Fim", "Atividade", "Recursos"], enc["rows"], [1, 4, 5][i], [44, 44, CW - 88 - 130, 130])
+        if i == 0:
+            s.append(KeepTogether([P(f"Vídeo do Módulo 1: “{VIDEOS['m1']}”", "h2")] + bullets([
+                "Antes de dar o play, faça a pergunta do título à turma e deixe os participantes arriscarem palpites.",
+                "Anote 3 ou 4 palpites no flipchart, sem corrigir ninguém.",
+                "Só revele depois do vídeo: ele trata de comunicação. Compare com os palpites e conecte à ideia de que o design começa por entender as pessoas.",
+            ], LIME)))
+            s.append(KeepTogether([P(f"Vídeos dos Módulos 2 a 6: “{VIDEOS['m2']}”", "h2")] + bullets([
+                "Exiba o vídeo pelo botão “Assistir vídeo” do módulo e abra, em seguida, um debate de 5 a 10 minutos.",
+                "Perguntas-guia: Que necessidade das pessoas o caso resolve? Qual etapa do Design Thinking aparece com mais força? O que dá para aplicar aqui?",
+                "Registre as melhores ideias no flipchart: elas alimentam as dinâmicas e o Desafio Final.",
+            ], TEAL)))
         for a in acts.get(i + 1, []):
             parts = [P(f"{a['title']}  ·  {a['time']}", "h2"), P(f"<b>Objetivo:</b> {a['goal']}")]
             parts += bullets([f"<b>Passo {k + 1}.</b> {st}" for k, st in enumerate(a["steps"])], [LIME, TEAL, BLUE][i])
@@ -632,130 +581,13 @@ def build_guide(out):
     doc.multiBuild(s)
 
 
-# ---------------------------------------------------------------- vídeos interativos (pypdf)
-def add_video_widgets(pdf_path, urls):
-    from pypdf import PdfReader, PdfWriter
-    from pypdf.generic import (DictionaryObject, NameObject, NumberObject, ArrayObject, FloatObject,
-                               TextStringObject, DecodedStreamObject, BooleanObject)
-
-    r = PdfReader(str(pdf_path))
-    w = PdfWriter(clone_from=r)
-
-    def font(base):
-        f = DictionaryObject({NameObject("/Type"): NameObject("/Font"), NameObject("/Subtype"): NameObject("/Type1"),
-                              NameObject("/BaseFont"): NameObject(base), NameObject("/Encoding"): NameObject("/WinAnsiEncoding")})
-        return w._add_object(f)
-
-    helv, helvb = font("/Helvetica"), font("/Helvetica-Bold")
-
-    def esc(t):
-        return t.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)").encode("cp1252", "replace")
-
-    def rgbf(hx):
-        return " ".join(f"{int(hx[i:i + 2], 16) / 255:.3f}" for i in (0, 2, 4))
-
-    def xobj(wd, ht, ops):
-        st = DecodedStreamObject()
-        st.set_data(ops)
-        st.update({NameObject("/Type"): NameObject("/XObject"), NameObject("/Subtype"): NameObject("/Form"),
-                   NameObject("/BBox"): ArrayObject([FloatObject(0), FloatObject(0), FloatObject(wd), FloatObject(ht)]),
-                   NameObject("/Resources"): DictionaryObject({NameObject("/Font"): DictionaryObject({NameObject("/F1"): helv, NameObject("/F2"): helvb})})})
-        return w._add_object(st)
-
-    def text_w(t, size, bold=False):
-        return pdfmetrics.stringWidth(t, "Helvetica-Bold" if bold else "Helvetica", size)
-
-    fields = ArrayObject()
-    for key, slot in VIDEO_SLOTS.items():
-        page = w.pages[slot["page"]]
-        col = slot["color"]
-        url = urls.get(key, "").strip()
-        x1, y1, x2, y2 = slot["video"]
-        vw, vh = x2 - x1, y2 - y1
-        title = VIDEOS[key]
-        line2 = "Clique para assistir" if url else "Vídeo disponível em breve"
-        u = (url[:70] + "...") if len(url) > 73 else url
-        ops = [b"q", f"{rgbf(B.BG)} rg 0 0 {vw:.1f} {vh:.1f} re f".encode(),
-               f"{rgbf(col)} rg".encode()]
-        cx, cy, rr = vw / 2, vh / 2 + 22, 26
-        k = 0.5523 * rr
-        ops.append(f"{cx + rr:.1f} {cy:.1f} m {cx + rr:.1f} {cy + k:.1f} {cx + k:.1f} {cy + rr:.1f} {cx:.1f} {cy + rr:.1f} c "
-                   f"{cx - k:.1f} {cy + rr:.1f} {cx - rr:.1f} {cy + k:.1f} {cx - rr:.1f} {cy:.1f} c "
-                   f"{cx - rr:.1f} {cy - k:.1f} {cx - k:.1f} {cy - rr:.1f} {cx:.1f} {cy - rr:.1f} c "
-                   f"{cx + k:.1f} {cy - rr:.1f} {cx + rr:.1f} {cy - k:.1f} {cx + rr:.1f} {cy:.1f} c f".encode())
-        ops.append(f"{rgbf(B.BG)} rg {cx - 8:.1f} {cy - 11:.1f} m {cx - 8:.1f} {cy + 11:.1f} l {cx + 12:.1f} {cy:.1f} l f".encode())
-        for txt, size, bold, color, yy in [(title, 11, True, B.TEXT, vh / 2 - 22), (line2, 9.5, False, col, vh / 2 - 40), (u, 7.5, False, B.MUTED, 14)]:
-            if not txt:
-                continue
-            tw = text_w(txt, size, bold)
-            ops.append(b"BT /" + (b"F2 " if bold else b"F1 ") + f"{size} Tf {rgbf(color)} rg {(vw - tw) / 2:.1f} {yy:.1f} Td (".encode() + esc(txt) + b") Tj ET")
-        ops.append(b"Q")
-        ap = xobj(vw, vh, b"\n".join(ops))
-        video = DictionaryObject({
-            NameObject("/Type"): NameObject("/Annot"), NameObject("/Subtype"): NameObject("/Widget"),
-            NameObject("/FT"): NameObject("/Btn"), NameObject("/Ff"): NumberObject(65536),
-            NameObject("/T"): TextStringObject(f"video_{key}"), NameObject("/TU"): TextStringObject(f"Vídeo: {title}"),
-            NameObject("/Rect"): ArrayObject([FloatObject(v) for v in (x1, y1, x2, y2)]),
-            NameObject("/F"): NumberObject(4), NameObject("/P"): page.indirect_reference,
-            NameObject("/AP"): DictionaryObject({NameObject("/N"): ap}),
-            NameObject("/MK"): DictionaryObject(),
-        })
-        if url:
-            video[NameObject("/A")] = DictionaryObject({NameObject("/S"): NameObject("/URI"), NameObject("/URI"): TextStringObject(url)})
-        vref = w._add_object(video)
-
-        tx1, ty1, tx2, ty2 = slot["toggle"]
-        tw_, th_ = tx2 - tx1, ty2 - ty1
-        lbl = "Mostrar / ocultar vídeo"
-        lw = text_w(lbl, 8.5, True)
-        r_ = th_ / 2
-        tops = [b"q", f"{rgbf(col)} rg".encode(),
-                f"{r_:.1f} 0 m {tw_ - r_:.1f} 0 l {tw_:.1f} 0 {tw_:.1f} {th_:.1f} {tw_ - r_:.1f} {th_:.1f} c {r_:.1f} {th_:.1f} l 0 {th_:.1f} 0 0 {r_:.1f} 0 c f".encode(),
-                b"BT /F2 8.5 Tf " + f"{rgbf(B.BG)} rg {(tw_ - lw) / 2:.1f} {th_ / 2 - 3:.1f} Td (".encode() + esc(lbl) + b") Tj ET", b"Q"]
-        tap = xobj(tw_, th_, b"\n".join(tops))
-        js = (f'var f = this.getField("video_{key}"); '
-              f'f.display = (f.display == display.hidden) ? display.visible : display.hidden;')
-        toggle = DictionaryObject({
-            NameObject("/Type"): NameObject("/Annot"), NameObject("/Subtype"): NameObject("/Widget"),
-            NameObject("/FT"): NameObject("/Btn"), NameObject("/Ff"): NumberObject(65536),
-            NameObject("/T"): TextStringObject(f"toggle_{key}"), NameObject("/TU"): TextStringObject("Mostrar ou ocultar o vídeo"),
-            NameObject("/Rect"): ArrayObject([FloatObject(v) for v in (tx1, ty1, tx2, ty2)]),
-            NameObject("/F"): NumberObject(0),  # visível na tela, não sai na impressão
-            NameObject("/P"): page.indirect_reference,
-            NameObject("/AP"): DictionaryObject({NameObject("/N"): tap}),
-            NameObject("/MK"): DictionaryObject(),
-            NameObject("/A"): DictionaryObject({NameObject("/S"): NameObject("/JavaScript"), NameObject("/JS"): TextStringObject(js)}),
-        })
-        tref = w._add_object(toggle)
-        if "/Annots" not in page:
-            page[NameObject("/Annots")] = ArrayObject()
-        page["/Annots"].extend([vref, tref])
-        fields.extend([vref, tref])
-
-    w._root_object[NameObject("/AcroForm")] = DictionaryObject({
-        NameObject("/Fields"): fields, NameObject("/NeedAppearances"): BooleanObject(False),
-        NameObject("/DR"): DictionaryObject({NameObject("/Font"): DictionaryObject({NameObject("/Helv"): helv})}),
-    })
-    with open(pdf_path, "wb") as fh:
-        w.write(fh)
-    return len(VIDEO_SLOTS)
-
-
-def load_urls():
-    p = B.BUILD / "videos.json"
-    data = json.loads(p.read_text(encoding="utf-8"))
-    return {k: v for k, v in data.items() if not k.startswith("_")}
-
-
 def build_all_pdfs():
     out = B.ROOT
-    handout = out / "DT_na_Pratica_Apostila.pdf"
-    build_handout(handout)
-    n = add_video_widgets(handout, load_urls())
+    build_handout(out / "DT_na_Pratica_Apostila.pdf")
     build_exam(out / "DT_na_Pratica_Prova.pdf")
     build_key(out / "DT_na_Pratica_Gabarito.pdf")
     build_guide(out / "DT_na_Pratica_Roteiro_Instrutor.pdf")
-    print(f"PDFs gerados em {out} (apostila com {n} espaços de vídeo)")
+    print(f"PDFs gerados em {out}")
 
 
 if __name__ == "__main__":

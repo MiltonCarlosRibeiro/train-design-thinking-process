@@ -1,7 +1,6 @@
 """Gera todos os arquivos do treinamento: slides (.pptx) e PDFs.
 
 Uso:  python build_all.py
-(Edite videos.json antes para incluir os links dos vídeos.)
 """
 import os
 import runpy

@@ -146,6 +146,23 @@ def circle(slide, cx, cy, d, fill, label=None, size=14, color=BG, bold=True, alp
     return s
 
 
+def photo_fill(slide, shape, path, ring=LIME):
+    """Preenche uma forma (ex.: círculo) com uma foto, mantendo a forma e suas animações."""
+    _, rid = slide.part.get_or_add_image_part(str(path))
+    spPr = shape._element.spPr
+    for tag in ("a:solidFill", "a:noFill", "a:gradFill", "a:blipFill"):
+        for e in spPr.findall(qn(tag)):
+            spPr.remove(e)
+    blip = etree.SubElement(spPr, qn("a:blipFill"))
+    etree.SubElement(blip, qn("a:blip")).set(qn("r:embed"), rid)
+    etree.SubElement(etree.SubElement(blip, qn("a:stretch")), qn("a:fillRect"))
+    spPr.remove(blip)
+    spPr.insert(list(spPr).index(spPr.find(qn("a:prstGeom"))) + 1, blip)
+    shape.line.color.rgb = C(ring)
+    shape.line.width = Pt(2.25)
+    return shape
+
+
 def new_slide(notes=None, transition="fade"):
     A.finish()
     s = prs.slides.add_slide(BLANK)
@@ -246,17 +263,22 @@ def s_about():
     s = new_slide("Personalize este slide com sua trajetória. Fale de projetos reais em que você aplicou Design Thinking ou análise de dados. Credibilidade vende o treinamento.")
     chrome(s, "Quem conduz")
     title(s, "Sobre o instrutor")
+    foto = ASSETS / "instrutor.png"  # foto quadrada; o círculo faz o recorte
     with beat("zoom", dur=0.6):
-        circle(s, 2.3, 3.7, 2.6, SURFACE2, "Sua foto", size=14, color=MUTED, bold=False)
+        if foto.exists():
+            photo_fill(s, circle(s, 2.3, 3.7, 2.6, SURFACE2), foto)
+        else:
+            circle(s, 2.3, 3.7, 2.6, SURFACE2, "Sua foto", size=14, color=MUTED, bold=False)
     with beat("rise", gap=0.25):
         text(s, 4.3, 1.9, 8, 0.6, B.INSTRUCTOR, size=28, bold=True)
         text(s, 4.3, 2.55, 8, 0.4, f"Fundador da {B.BRAND}", size=16, color=LIME)
     with beat("rise", gap=0.3):
         bullets(s, 4.3, 3.3, 8.2, 3, [
-        "Certificação Design Thinking – Process (Nano Course, 40h, 2025)",
-        "Edite aqui: formação acadêmica",
-        "Edite aqui: experiência com dados, tecnologia e projetos",
-        "Edite aqui: empresas e setores em que já atuou",
+        "Tecnólogo em Análise e Desenvolvimento de Sistemas (FIAP)",
+        "MBAs em Gestão da Qualidade (Anhanguera) e Project Management (UNISAL)",
+        "Bacharel em Administração (Anhanguera)",
+        "Certificação Design Thinking – Process (40h) e cursos de IA, Python e Dados",
+        "8 anos na indústria no Japão · hoje, dados e automação (Big Data)",
         ], size=16, dot=TEAL)
     return s
 

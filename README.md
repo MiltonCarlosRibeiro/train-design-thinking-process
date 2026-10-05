@@ -9,7 +9,7 @@ Instrutor: **Milton Carlos Ribeiro**
 | Arquivo | Para quem | O que é |
 |---|---|---|
 | `DT_na_Pratica_Slides-transflow.pptx` | Instrutor | Apresentação com animações, transições e frases de impacto |
-| `DT_na_Pratica_Apostila.pdf` | Participantes | Apostila com conteúdo, exercícios e caixas de vídeo interativas |
+| `DT_na_Pratica_Apostila.pdf` | Participantes | Apostila com conteúdo e exercícios |
 | `DT_na_Pratica_Prova.pdf` | Participantes | Prova individual (6 questões, 1 por módulo) |
 | `DT_na_Pratica_Gabarito.pdf` | Instrutor | Gabarito comentado |
 | `DT_na_Pratica_Roteiro_Instrutor.pdf` | Instrutor | Cronograma, dinâmicas, materiais e ficha de pontuação |
@@ -31,6 +31,25 @@ Instrutor: **Milton Carlos Ribeiro**
 - Cada módulo tem um botão **"Assistir vídeo"** que abre um slide de vídeo **oculto** (pulado na apresentação normal), com botão "Voltar".
 - As notas do apresentador trazem orientações para cada slide.
 
+## Vídeos da apresentação
+
+Os vídeos ficam na pasta `videos` e são **vinculados** à apresentação `-transflow`. Por isso, o PPTX continua leve.
+
+| Botão "Assistir vídeo" | Arquivo |
+|---|---|
+| Módulo 1 | `videos\M1.mp4` |
+| Módulo 2 | `videos\M2.mp4` |
+| Módulo 3 | `videos\M3.mp4` |
+| Módulo 6 (modelo de pitch) | `videos\MODELOS DE PITCH\MODELO_PITCH5MIN-01-MICRONECTAR.mp4` |
+
+**Ao copiar a pasta para outro computador** (ou mudá-la de lugar):
+
+1. Copie a pasta `Treinamento_HayaiDataSystems` inteira, **com a pasta `videos`**.
+2. Feche a apresentação, se estiver aberta.
+3. Dê dois cliques em **`Configurar_Videos.bat`**. Ele aponta os vídeos de todas as apresentações desta pasta para a pasta `videos` do computador atual e mostra `ok` ou `FALTANDO` para cada vídeo.
+
+É preciso rodar uma vez em cada computador, ou sempre que a pasta mudar de lugar. O PowerPoint só toca vídeo vinculado pelo caminho completo, e esse caminho muda de um computador para outro.
+
 ## Como gerar os arquivos
 
 Todo o material é gerado por código a partir de `build/content.py`. Para alterar textos, edite esse arquivo e gere de novo.
@@ -48,10 +67,6 @@ python build/build_all.py
 - Windows: os PDFs usam a fonte **Segoe UI Symbol** do sistema (marcadores ✓ ◯ ●), e os slides usam **Segoe UI**.
 - A fonte dos PDFs (**Ubuntu**) já vem em `build/assets/fonts` (licença em `UFL.txt`).
 
-### Vídeos da apostila
-
-Cole os links dos vídeos (YouTube não listado, Google Drive, Vimeo…) em `build/videos.json` e gere de novo. Na apostila, o botão **"Mostrar / ocultar vídeo"** funciona no Adobe Acrobat Reader e no Foxit.
-
 ## Estrutura
 
 ```
@@ -64,7 +79,6 @@ Cole os links dos vídeos (YouTube não listado, Google Drive, Vimeo…) em `bui
 │   ├── brand.py           # cores e identidade visual
 │   ├── make_assets.py     # recorta o logo
 │   ├── render_pptx.ps1    # exporta os slides como PNG (requer PowerPoint)
-│   ├── videos.json        # links dos vídeos
 │   └── assets/            # logos e fontes
 └── *.pdf / *.pptx         # materiais prontos
 ```

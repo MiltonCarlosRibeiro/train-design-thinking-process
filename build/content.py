@@ -61,16 +61,16 @@ MATERIALS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Vídeos — uma chave por espaço de vídeo (links em videos.json)
+# Vídeos — títulos dos vídeos exibidos nos slides
 # ---------------------------------------------------------------------------
 VIDEOS = {
     "abertura": "Boas-vindas: por que Design Thinking importa para a sua empresa",
-    "m1": "Design além da estética: forma, função e inovação",
-    "m2": "Empatizar: como pesquisar e entender o cliente",
-    "m3": "Definir: encontrando o problema certo",
-    "m4": "Idear: conduzindo uma oficina de ideias",
-    "m5": "Prototipar e testar: errar rápido e barato",
-    "m6": "Estudo de caso: do problema à solução validada",
+    "m1": "De quem estamos falando?",
+    "m2": "Casos e Inovações: debate com Design Thinking",
+    "m3": "Casos e Inovações: debate com Design Thinking",
+    "m4": "Casos e Inovações: debate com Design Thinking",
+    "m5": "Casos e Inovações: debate com Design Thinking",
+    "m6": "Casos e Inovações: debate com Design Thinking",
 }
 
 # ---------------------------------------------------------------------------
@@ -180,7 +180,6 @@ MODULES = [
             ("p", "Design Thinking é a forma de pensar dos designers aplicada a qualquer tipo de problema, por qualquer profissional. O processo mais difundido tem cinco etapas:"),
             ("stages", None),
             ("p", "O processo não é linear. Um teste pode revelar que o problema foi mal definido; uma ideia pode exigir nova pesquisa. Voltar etapas faz parte do método. A premissa é errar rápido, errar barato e aprender rápido."),
-            ("video", "m1"),
             ("exercise", "Para refletir", ["Cite uma experiência ruim que você teve como cliente. Qual foi a causa de design?", "Na sua empresa, qual processo ou serviço mais precisa de uma inovação incremental?", "Sua equipe tem liberdade para testar ideias em pequena escala? O que impede?"]),
         ],
     },
@@ -292,7 +291,6 @@ MODULES = [
             ("h", "4. Sintetizando os resultados"),
             ("p", "Depois das entrevistas, escreva cada achado relevante em um post-it (uma ideia por post-it). Espalhe tudo em uma parede e agrupe por semelhança. Nomeie cada grupo. Esse método, chamado de diagrama de afinidade, transforma dezenas de falas soltas em alguns padrões claros: os insights."),
             ("p", "Persona. Com os padrões em mãos, crie uma ou mais personas: personagens fictícios que representam perfis reais encontrados na pesquisa, com nome, contexto, objetivos, dores e comportamentos. A persona ajuda o time a lembrar para quem está projetando."),
-            ("video", "m2"),
             ("exercise", "Exercício prático", ["Monte uma Matriz CSD para um problema da sua área com pelo menos 3 itens em cada coluna.", "Escreva 5 perguntas abertas para entrevistar um cliente sobre esse problema.", "Defina o screener: quem você precisa entrevistar e quem não deve participar?"]),
         ],
     },
@@ -374,7 +372,6 @@ MODULES = [
             ("p", "O Problem Statement resume o problema em uma frase: [Persona] precisa de [necessidade] porque [insight]. Exemplo: 'Carla, dona de loja, precisa responder clientes em minutos, mesmo durante o atendimento presencial, porque metade das vendas perdidas acontece por demora na resposta.'"),
             ("p", "Em seguida, transforme o problema em perguntas que convidam à criação, começando com 'Como poderíamos…?'. Elas são o ponto de partida da ideação."),
             ("bullets", ["Como poderíamos ajudar a Carla a responder clientes sem interromper o atendimento?", "Como poderíamos fazer o cliente encontrar sozinho as respostas mais comuns?", "Como poderíamos transformar a espera em parte positiva da experiência?"]),
-            ("video", "m3"),
             ("exercise", "Exercício prático", ["Escreva uma Job Story para o problema que sua equipe escolheu.", "Escreva o Problem Statement no formato persona + necessidade + insight.", "Gere 5 perguntas 'Como poderíamos…?' e marque a que mais inspira ideias."]),
         ],
     },
@@ -476,7 +473,6 @@ MODULES = [
             ("h", "5. Priorizando as ideias"),
             ("p", "Votação por pontos: cada participante recebe de 3 a 5 adesivos e vota nas ideias que considera mais promissoras. As mais votadas seguem para a matriz impacto x esforço:"),
             ("matrix", None),
-            ("video", "m4"),
             ("exercise", "Exercício prático", ["Faça um Crazy 8s para a pergunta 'Como poderíamos…?' da sua equipe.", "Posicione as 5 melhores ideias na matriz impacto x esforço.", "Qual ideia é uma 'vitória rápida'? Por quê?"]),
         ],
     },
@@ -572,7 +568,6 @@ MODULES = [
             ("p", "Após os testes, organize o retorno em uma grade de captura com quatro quadrantes: o que funcionou, o que não funcionou, perguntas que surgiram e novas ideias. Ajuste o protótipo e teste de novo, quantas vezes forem necessárias."),
             ("h", "5. Implementar e medir"),
             ("p", "Com a solução validada, implemente de preferência em etapas e defina indicadores antes do lançamento: taxa de conversão, tempo de atendimento, número de reclamações, recompra. Os dados mostram se o problema foi realmente resolvido e alimentam um novo ciclo de melhoria."),
-            ("video", "m5"),
             ("exercise", "Exercício prático", ["Desenhe em papel um protótipo de baixa fidelidade da ideia escolhida pela sua equipe.", "Escreva 3 tarefas para um teste com usuários.", "Defina 2 indicadores que mostrariam que a solução funcionou."]),
         ],
     },
@@ -643,7 +638,6 @@ MODULES = [
             ("h", "5. Implementar e medir"),
             ("p", "No piloto, a taxa de faltas caiu de 28% para 12% e 65% das vagas liberadas foram reocupadas, sem nenhum investimento em tecnologia (números ilustrativos). Com a solução validada, a clínica automatizou os lembretes e passou a acompanhar mensalmente a taxa de faltas, as remarcações e a ocupação da agenda."),
             ("box", "Lição do caso", "A primeira hipótese ('descaso do paciente') levaria a uma multa por falta. A pesquisa mostrou que o problema era o processo. Resolver o problema certo foi mais barato e mais eficaz."),
-            ("video", "m6"),
         ],
     },
 ]
